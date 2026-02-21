@@ -22,7 +22,6 @@ color:white;
 overflow-x:hidden;
 }
 
-/* NAVBAR */
 nav{
 display:flex;
 justify-content:space-between;
@@ -41,7 +40,6 @@ font-weight:800;
 color:#ff9800;
 }
 
-/* HERO */
 .hero{
 min-height:100vh;
 display:flex;
@@ -77,7 +75,6 @@ font-weight:600;
 background:#ff5722;
 }
 
-/* MENU */
 .menu-section{
 padding:80px 60px;
 background:#111;
@@ -130,7 +127,6 @@ button:hover{
 background:#ff5722;
 }
 
-/* CART BUTTON */
 .cart-btn{
 position:fixed;
 bottom:30px;
@@ -143,7 +139,6 @@ font-weight:bold;
 box-shadow:0 5px 20px rgba(0,0,0,0.5);
 }
 
-/* MODAL */
 .modal{
 display:none;
 position:fixed;
@@ -170,7 +165,6 @@ border-radius:8px;
 border:1px solid #ccc;
 }
 
-/* ANIMATIONS */
 @keyframes fadeDown{
 from{opacity:0;transform:translateY(-40px);}
 to{opacity:1;transform:translateY(0);}
@@ -212,7 +206,6 @@ Order Now
 🛒 Cart (<span id="cartCount">0</span>)
 </div>
 
-<!-- Checkout Modal -->
 <div class="modal" id="checkoutModal">
 <div class="modal-content">
 <h3>Checkout</h3>
@@ -226,7 +219,6 @@ Order Now
 </div>
 </div>
 
-<!-- Success Modal -->
 <div class="modal" id="successModal">
 <div class="modal-content">
 <h3>Order Confirmed 🎉</h3>
@@ -242,7 +234,7 @@ emailjs.init("f6PbzcCV12G8gypUQ");
 })();
 
 const SERVICE="service_9rub1jr";
-const TEMPLATE="template_p7dek5g";
+const TEMPLATE="template_p7dek5g";   // ✅ CORRECT TEMPLATE
 
 let cart=[];
 let total=0;
@@ -279,7 +271,10 @@ cartCount.innerText=cart.length;
 }
 
 function openCheckout(){
-if(cart.length===0){alert("Cart empty!");return;}
+if(cart.length===0){
+alert("Cart empty!");
+return;
+}
 checkoutModal.style.display="flex";
 }
 
@@ -298,8 +293,17 @@ const name=document.getElementById("studentName").value.trim();
 const reg=document.getElementById("regNo").value.trim();
 const email=document.getElementById("studentEmail").value.trim();
 
-const details=cart.map(item=>`${item.name} - Rs.${item.price}`).join("\n");
+if(!name||!reg||!email){
+alert("Fill all fields");
+return;
+}
 
+if(cart.length===0){
+alert("Cart empty!");
+return;
+}
+
+const details=cart.map(item=>`${item.name} - Rs.${item.price}`).join("\n");
 const token="SJCET-"+Math.floor(1000+Math.random()*9000);
 tokenNumber.innerText=token;
 
@@ -311,8 +315,7 @@ order_details:details,
 total_amount:total,
 token_number:token
 })
-.then(function(response){
-console.log("SUCCESS:",response.status,response.text);
+.then(function(){
 checkoutModal.style.display="none";
 successModal.style.display="flex";
 cart=[];
