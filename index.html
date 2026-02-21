@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SJCET Smart Canteen</title>
+
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+body{
+background:#0f2027;
+color:white;
+overflow-x:hidden;
+}
+
+/* NAVBAR */
+nav{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:20px 60px;
+position:fixed;
+width:100%;
+background:rgba(0,0,0,0.6);
+backdrop-filter:blur(10px);
+z-index:1000;
+}
+
+.logo{
+font-size:24px;
+font-weight:800;
+color:#ff9800;
+}
+
+nav ul{
+display:flex;
+gap:30px;
+list-style:none;
+}
+
+nav ul li{
+cursor:pointer;
+transition:0.3s;
+}
+
+nav ul li:hover{
+color:#ff9800;
+}
+
+/* HERO */
+.hero{
+min-height:100vh;
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:0 80px;
+background:linear-gradient(rgba(15,32,39,0.8),rgba(15,32,39,0.8)),
+url('https://images.unsplash.com/photo-1555992336-03a23c7b20ee') center/cover;
+}
+
+.hero-text{
+max-width:550px;
+animation:fadeLeft 1s ease;
+}
+
+.hero-text h1{
+font-size:55px;
+font-weight:800;
+margin-bottom:20px;
+}
+
+.hero-text p{
+color:#ddd;
+margin-bottom:30px;
+line-height:1.6;
+}
+
+.hero-btn{
+background:#ff9800;
+padding:14px 30px;
+border:none;
+border-radius:6px;
+cursor:pointer;
+font-weight:600;
+transition:0.3s;
+}
+
+.hero-btn:hover{
+background:#ff5722;
+transform:scale(1.05);
+}
+
+/* MENU SECTION */
+.menu-section{
+padding:80px 60px;
+background:#111;
+}
+
+.menu-title{
+text-align:center;
+font-size:36px;
+margin-bottom:40px;
+}
+
+.menu{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:25px;
+}
+
+.card{
+background:#1b1b1b;
+padding:20px;
+border-radius:15px;
+text-align:center;
+transition:0.4s;
+transform:translateY(40px);
+opacity:0;
+animation:fadeUp 0.8s forwards;
+}
+
+.card:hover{
+transform:translateY(-10px);
+background:#222;
+}
+
+.price{
+color:#ff9800;
+font-weight:600;
+margin:10px 0;
+}
+
+button{
+padding:8px 18px;
+border:none;
+border-radius:20px;
+background:#ff9800;
+color:white;
+cursor:pointer;
+transition:0.3s;
+}
+
+button:hover{
+background:#ff5722;
+}
+
+/* CART */
+.cart-btn{
+position:fixed;
+bottom:30px;
+right:30px;
+background:#ff5722;
+padding:15px 20px;
+border-radius:30px;
+cursor:pointer;
+font-weight:bold;
+box-shadow:0 5px 20px rgba(0,0,0,0.5);
+}
+
+/* MODAL */
+.modal{
+display:none;
+position:fixed;
+inset:0;
+background:rgba(0,0,0,0.7);
+justify-content:center;
+align-items:center;
+}
+
+.modal-content{
+background:white;
+color:black;
+padding:25px;
+border-radius:15px;
+width:320px;
+animation:slideUp 0.4s ease;
+}
+
+input{
+width:100%;
+padding:10px;
+margin-bottom:10px;
+border-radius:8px;
+border:1px solid #ccc;
+}
+
+/* ANIMATIONS */
+@keyframes fadeLeft{
+from{opacity:0;transform:translateX(-80px);}
+to{opacity:1;transform:translateX(0);}
+}
+
+@keyframes fadeUp{
+to{opacity:1;transform:translateY(0);}
+}
+
+@keyframes slideUp{
+from{transform:translateY(50px);}
+to{transform:translateY(0);}
+}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+.hero{
+flex-direction:column;
+text-align:center;
+padding-top:120px;
+}
+}
+</style>
+</head>
+
+<body>
+
+<nav>
+<div class="logo">🍴 SJCET Canteen</div>
+<ul>
+<li>Home</li>
+<li>Menu</li>
+<li>Contact</li>
+</ul>
+</nav>
+
+<section class="hero">
+<div class="hero-text">
+<h1>Enjoy Our Delicious Meals</h1>
+<p>Freshly prepared food for SJCET students. Fast ordering. Instant token system.</p>
+<button class="hero-btn" onclick="document.querySelector('.menu-section').scrollIntoView({behavior:'smooth'})">
+Order Now
+</button>
+</div>
+</section>
+
+<section class="menu-section">
+<h2 class="menu-title">Our Menu</h2>
+<div class="menu" id="menu"></div>
+</section>
+
+<div class="cart-btn" onclick="openCheckout()">
+🛒 Cart (<span id="cartCount">0</span>)
+</div>
+
+<!-- Checkout Modal -->
+<div class="modal" id="checkoutModal">
+<div class="modal-content">
+<h3>Checkout</h3>
+<form id="checkoutForm">
+<input type="text" id="studentName" placeholder="Student Name" required>
+<input type="text" id="regNo" placeholder="Register Number" required>
+<input type="email" id="studentEmail" placeholder="Email" required>
+<button type="submit">Place Order</button>
+<button type="button" onclick="closeCheckout()">Cancel</button>
+</form>
+</div>
+</div>
+
+<!-- Success Modal -->
+<div class="modal" id="successModal">
+<div class="modal-content">
+<h3>Order Confirmed 🎉</h3>
+<p>Your Token:</p>
+<h2 id="tokenNumber"></h2>
+<button onclick="closeSuccess()">Close</button>
+</div>
+</div>
+
+<script>
+emailjs.init("f6PbzcCV12G8gypUQ");
+
+const SERVICE="service_9rub1jr";
+const TEMPLATE="template_jco7mt";
+
+let cart=[];
+let total=0;
+
+const foods=[
+["Sandwich",30],["Burger",50],["Juice",25],["Pizza",80],
+["French Fries",40],["Coffee",20],["Tea",15],["Noodles",60],
+["Pasta",70],["Samosa",10],["Roll",35],["Milkshake",55]
+];
+
+const menu=document.getElementById("menu");
+
+foods.forEach((food,index)=>{
+const card=document.createElement("div");
+card.className="card";
+card.style.animationDelay=index*0.1+"s";
+card.innerHTML=`
+<h3>${food[0]}</h3>
+<div class="price">Rs. ${food[1]}</div>
+<button onclick="addToCart('${food[0]}',${food[1]})">Add</button>
+`;
+menu.appendChild(card);
+});
+
+function addToCart(name,price){
+cart.push({name,price});
+total+=price;
+document.getElementById("cartCount").innerText=cart.length;
+}
+
+function openCheckout(){
+if(cart.length===0){alert("Cart empty!");return;}
+document.getElementById("checkoutModal").style.display="flex";
+}
+
+function closeCheckout(){
+document.getElementById("checkoutModal").style.display="none";
+}
+
+function closeSuccess(){
+document.getElementById("successModal").style.display="none";
+}
+
+document.getElementById("checkoutForm").addEventListener("submit",function(e){
+e.preventDefault();
+
+const name=studentName.value;
+const reg=regNo.value;
+const email=studentEmail.value;
+
+const details=cart.map(item=>`${item.name} - Rs.${item.price}`).join("\n");
+
+const token="SJCET-"+Math.floor(1000+Math.random()*9000);
+tokenNumber.innerText=token;
+
+emailjs.send(SERVICE,TEMPLATE,{
+student_name:name,
+register_number:reg,
+student_email:email,
+order_details:details,
+total_amount:total,
+token_number:token
+}).then(()=>{
+checkoutModal.style.display="none";
+successModal.style.display="flex";
+cart=[];
+total=0;
+cartCount.innerText=0;
+checkoutForm.reset();
+}).catch(err=>{
+alert("Email failed");
+console.log(err);
+});
+});
+</script>
+
+</body>
+</html>
